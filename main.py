@@ -140,7 +140,9 @@ def parse_interval(interval_str: str) -> Optional[int]:
         return value * 86400
     return None # Should not happen with the regex
 
-def load_json_data(filepath: str, default_value=None) -> dict | list:
+from typing import Union
+
+def load_json_data(filepath: str, default_value=None) -> Union[dict, list]:
     """Loads JSON data from a file, returning default_value on error or if file not found."""
     if default_value is None:
         default_value = {}
