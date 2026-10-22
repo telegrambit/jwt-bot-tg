@@ -173,7 +173,9 @@ def load_json_data(filepath: str, default_value=None) -> Union[dict, list]:
         logger.error(f"Unexpected error loading {filepath}: {e}. Returning default value.", exc_info=True)
         return default_value
 
-def save_json_data(filepath: str, data: dict | list) -> bool:
+from typing import Union
+
+def save_json_data(filepath: str, data: Union[dict, list]) -> bool:
     """Saves data to a JSON file using atomic write. Returns True on success, False on error."""
     temp_filepath = filepath + ".tmp"
     try:
