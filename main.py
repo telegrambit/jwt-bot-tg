@@ -124,7 +124,9 @@ def sanitize_filename(name: str) -> str:
         return 'Unknown.json'
     return sanitized
 
-def parse_interval(interval_str: str) -> int | None:
+from typing import Optional
+
+def parse_interval(interval_str: str) -> Optional[int]:
     """Parses interval strings like '1h', '30m', '2d' into seconds."""
     match = re.match(r'^(\d+)\s*(m|h|d)$', interval_str.lower().strip())
     if not match:
