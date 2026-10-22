@@ -1119,7 +1119,7 @@ async def handle_document(update: Update, context: CallbackContext) -> None:
 
 async def upload_to_github_background(bot, user_id: int, local_token_file_path: str, config: dict) -> bool:
     """
-    Uploads the content of the generated token file to GitHub.
+    # Uploads the content of the generated token file to GitHub.
     Designed to be called from background tasks. Sends notifications directly to the user.
     Returns True on success, False on failure.
     """
