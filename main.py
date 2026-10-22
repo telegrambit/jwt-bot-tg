@@ -2949,14 +2949,21 @@ async def run_scheduled_file_processor(application: Application) -> None:
         # Wait for the next check interval regardless of outcome (unless error caused sleep above)
         await asyncio.sleep(AUTO_PROCESS_CHECK_INTERVAL)
 
-async def process_single_schedule(bot, user_id: int, schedule_name: str, schedule_info: dict, github_config: Optional[dict]) -> Tuple[str, str, bool]:    """
+async def process_single_schedule(
+    bot,
+    user_id: int,
+    schedule_name: str,
+    schedule_info: dict,
+    github_config: Optional[dict]
+) -> Tuple[str, str, bool]:
+    """
     Processes a single scheduled file: reads data, calls API, uploads to GitHub.
     Returns (user_id_str, schedule_name, github_upload_success_or_skipped)
     """
     user_id_str = str(user_id)
     stored_file_path = schedule_info.get('stored_file_path')
-    user_display_name = schedule_info.get('user_schedule_name', schedule_name) # For messages
-    github_upload_status = False # Default to false (meaning upload failed or was not needed)
+    user_display_name = schedule_info.get('user_schedule_name', schedule_name)
+    github_upload_status = False
 
     log_prefix = f"AutoProcess User {user_id} Schedule '{schedule_name}':"
     logger.info(f"{log_prefix} Starting.")
