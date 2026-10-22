@@ -488,8 +488,9 @@ async def cancel(update: Update, context: CallbackContext) -> None:
 
 # --- File Processing Logic ---
 
-async def process_account(session: aiohttp.ClientSession, account: dict, semaphore: asyncio.Semaphore) -> tuple[str | None, str | None, dict | None, dict | None, str | None]:
-    """
+from typing import Optional, Tuple
+
+async def process_account(session: aiohttp.ClientSession, account: dict, semaphore: asyncio.Semaphore) -> Tuple[Optional[str], Optional[str], Optional[dict], Optional[dict], Optional[str]]:    """
     Processes a single account via the API to get a JWT token and potentially region.
     (Remains mostly the same, but added slightly more robust logging)
     Returns: tuple(token | None, region | None, working_account | None, lost_account | None, error_reason | None)
