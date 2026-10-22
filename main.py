@@ -588,7 +588,7 @@ async def process_account(
              return None, None, None, lost_info, error_reason
 
 async def handle_document(update: Update, context: CallbackContext) -> None:
-    """Handle incoming JSON documents OR files sent after /setfile."""
+    # Handle incoming JSON documents OR files sent after /setfile.
     user = update.effective_user
     message = update.message
     if not user or not message: return
