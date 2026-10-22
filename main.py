@@ -235,7 +235,7 @@ def is_user_vip(user_id: int) -> bool:
             return False
     return False # Not in VIP data or data is not a dict
 
-def get_vip_expiry(user_id: int) -> str | None:
+def get_vip_expiry(user_id: int) -> Optional[str]:
     """Gets the VIP expiry date string (YYYY-MM-DD HH:MM:SS UTC) if the user is currently VIP."""
     vip_data = load_vip_data()
     user_id_str = str(user_id)
