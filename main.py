@@ -488,6 +488,7 @@ async def cancel(update: Update, context: CallbackContext) -> None:
 
 # --- File Processing Logic ---
 
+from typing import Tuple, Optional
 async def process_account(
     session: aiohttp.ClientSession,
     account: dict,
