@@ -3407,21 +3407,6 @@ async def main() -> None:
          logger.info("Shutdown complete.")
 
 
-if __name__ == '__main__':
-    try:
-        # Ensure TOKEN has a valid value before running
-        if not TOKEN or TOKEN == "YOUR_FALLBACK_BOT_TOKEN":
-             print("FATAL: TELEGRAM_BOT_TOKEN is not set. Please configure it before running.")
-        else:
-             asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\n-- Bot stopping due to Ctrl+C --")
-        logger.info("Bot stopped manually via KeyboardInterrupt.")
-    except Exception as e:
-        print(f"\n💥 A critical unhandled exception occurred outside the main asyncio loop: {e}")
-        logger.critical(f"Critical unhandled exception in __main__: {e}", exc_info=True)
-
-
 
 # ===================== FINAL MULTI-GITHUB + ADMIN EXTENSION =====================
 # This section ONLY ADDS features. Original logic remains untouched.
@@ -3541,3 +3526,18 @@ async def admin_panel(update: Update, context: CallbackContext):
     )
 
 # ===============================================================================
+
+if __name__ == '__main__':
+    try:
+        # Ensure TOKEN has a valid value before running
+        if not TOKEN or TOKEN == "YOUR_FALLBACK_BOT_TOKEN":
+             print("FATAL: TELEGRAM_BOT_TOKEN is not set. Please configure it before running.")
+        else:
+             asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n-- Bot stopping due to Ctrl+C --")
+        logger.info("Bot stopped manually via KeyboardInterrupt.")
+    except Exception as e:
+        print(f"\n💥 A critical unhandled exception occurred outside the main asyncio loop: {e}")
+        logger.critical(f"Critical unhandled exception in __main__: {e}", exc_info=True)
+
