@@ -33,15 +33,19 @@ from dotenv import load_dotenv
 # --- Configuration ---
 load_dotenv()
 
-# Essential: Get Bot Token
-TOKEN = os.getenv('8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I') # Prefer .env
-if not TOKEN or TOKEN == "8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I": # Check if token is missing or placeholder
-    # !!! Replace with your actual bot token if not using .env !!!
-    TOKEN = "8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I" # FALLBACK - Highly recommended to use .env
+# Essential: Get Bot Token from environment
+TOKEN = os.getenv("BOT_TOKEN", "")
 
-# Optional: API Configuration
-API_BASE_URL = os.getenv('JWT_API_URL', 'https://jwt-bot-ob55.vercel.app/token')
-API_KEY = os.getenv('JWT_API_KEY', '')
+if not TOKEN:
+    raise ValueError("BOT_TOKEN is missing from environment variables!")
+
+# API Configuration
+API_BASE_URL = os.getenv(
+    "JWT_API_URL",
+    "https://jwt-bot-ob55.vercel.app/token"
+)
+
+API_KEY = os.getenv("JWT_API_KEY", "")
 
 # Optional: Bot Settings
 MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', 5 * 1024 * 1024))  # 5MB default
