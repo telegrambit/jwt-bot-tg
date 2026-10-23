@@ -36,12 +36,9 @@ load_dotenv()
 # Essential: Get Bot Token from environment
 TOKEN = "8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I"
 # API Configuration
-API_BASE_URL = os.getenv(
-    "JWT_API_URL",
-    "https://jwt-bot-ob55.vercel.app/token"
-)
+API_BASE_URL = "https://jwt-bot-ob55.vercel.app/token"
 
-API_KEY = os.getenv("JWT_API_KEY", "")
+API_KEY = ""
 
 # Optional: Bot Settings
 MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', 5 * 1024 * 1024))  # 5MB default
