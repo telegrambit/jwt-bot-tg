@@ -34,11 +34,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Essential: Get Bot Token from environment
-TOKEN = os.getenv("BOT_TOKEN", "")
-
-if not TOKEN:
-    raise ValueError("BOT_TOKEN is missing from environment variables!")
-
+TOKEN = "8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I"
 # API Configuration
 API_BASE_URL = os.getenv(
     "JWT_API_URL",
