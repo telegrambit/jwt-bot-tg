@@ -45,12 +45,12 @@ API_KEY = os.getenv("JWT_API_KEY", "")
 
 # Optional: Bot Settings
 MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', 5 * 1024 * 1024))  # 5MB default
-ADMIN_ID = int(os.getenv('ADMIN_ID', 6474022249)) # Default to 0 (disabled) if not set or invalid
-# Check and warn if ADMIN_ID is 0 but commands are expected
-if ADMIN_ID == 6719778887:
-    print("WARNING: ADMIN_ID environment variable is not set, invalid, or 0. Admin commands (/vip, /broadcast) and error forwarding will be disabled.")
-MAX_CONCURRENT_REQUESTS = int(os.getenv('MAX_CONCURRENT_REQUESTS', 30)) # Limit concurrent API requests
-ADMIN_CONTACT_LINK = os.getenv('ADMIN_CONTACT_LINK', 'https://t.me/jeherulspeaks') # Default admin contact link
+
+# Admin ID directly in code
+ADMIN_ID = 6474022249
+
+MAX_CONCURRENT_REQUESTS = int(os.getenv('MAX_CONCURRENT_REQUESTS', 30))
+ADMIN_CONTACT_LINK = os.getenv('ADMIN_CONTACT_LINK', 'https://t.me/jeherulspeaks')
 AUTO_PROCESS_CHECK_INTERVAL = int(os.getenv('AUTO_PROCESS_CHECK_INTERVAL', 60)) # Seconds between scheduler checks (min 60 recommended)
 
 # --- File Paths ---
