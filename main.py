@@ -33,21 +33,24 @@ from dotenv import load_dotenv
 # --- Configuration ---
 load_dotenv()
 
-# Essential: Get Bot Token from environment
-TOKEN = "8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I"
-# API Configuration
-API_BASE_URL = "https://jwt-bot-ob55.vercel.app/token"
+# Essential: Get Bot Token
+TOKEN = os.getenv('8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I') # Prefer .env
+if not TOKEN or TOKEN == "8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I": # Check if token is missing or placeholder
+    # !!! Replace with your actual bot token if not using .env !!!
+    TOKEN = "8951844327:AAHXn5NcZJqaIHwpTT0zWbxLhUy1Mlwbb7I" # FALLBACK - Highly recommended to use .env
 
-API_KEY = ""
+# Optional: API Configuration
+API_BASE_URL = os.getenv('JWT_API_URL', 'https://jwt-bot-ob55.vercel.app/token')
+API_KEY = os.getenv('JWT_API_KEY', '')
 
 # Optional: Bot Settings
 MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', 5 * 1024 * 1024))  # 5MB default
-
-# Admin ID directly in code
-ADMIN_ID = 6474022249
-
-MAX_CONCURRENT_REQUESTS = int(os.getenv('MAX_CONCURRENT_REQUESTS', 30))
-ADMIN_CONTACT_LINK = os.getenv('ADMIN_CONTACT_LINK', 'https://t.me/jeherulspeaks')
+ADMIN_ID = int(os.getenv('ADMIN_ID', 6474022249)) # Default to 0 (disabled) if not set or invalid
+# Check and warn if ADMIN_ID is 0 but commands are expected
+if ADMIN_ID == 6719778887:
+    print("WARNING: ADMIN_ID environment variable is not set, invalid, or 0. Admin commands (/vip, /broadcast) and error forwarding will be disabled.")
+MAX_CONCURRENT_REQUESTS = int(os.getenv('MAX_CONCURRENT_REQUESTS', 30)) # Limit concurrent API requests
+ADMIN_CONTACT_LINK = os.getenv('ADMIN_CONTACT_LINK', 'https://t.me/jeherulspeaks') # Default admin contact link
 AUTO_PROCESS_CHECK_INTERVAL = int(os.getenv('AUTO_PROCESS_CHECK_INTERVAL', 60)) # Seconds between scheduler checks (min 60 recommended)
 
 # --- File Paths ---
@@ -121,9 +124,7 @@ def sanitize_filename(name: str) -> str:
         return 'Unknown.json'
     return sanitized
 
-from typing import Optional
-
-def parse_interval(interval_str: str) -> Optional[int]:
+def parse_interval(interval_str: str) -> int | None:
     """Parses interval strings like '1h', '30m', '2d' into seconds."""
     match = re.match(r'^(\d+)\s*(m|h|d)$', interval_str.lower().strip())
     if not match:
@@ -137,9 +138,7 @@ def parse_interval(interval_str: str) -> Optional[int]:
         return value * 86400
     return None # Should not happen with the regex
 
-from typing import Union
-
-def load_json_data(filepath: str, default_value=None) -> Union[dict, list]:
+def load_json_data(filepath: str, default_value=None) -> dict | list:
     """Loads JSON data from a file, returning default_value on error or if file not found."""
     if default_value is None:
         default_value = {}
@@ -170,9 +169,7 @@ def load_json_data(filepath: str, default_value=None) -> Union[dict, list]:
         logger.error(f"Unexpected error loading {filepath}: {e}. Returning default value.", exc_info=True)
         return default_value
 
-from typing import Union
-
-def save_json_data(filepath: str, data: Union[dict, list]) -> bool:
+def save_json_data(filepath: str, data: dict | list) -> bool:
     """Saves data to a JSON file using atomic write. Returns True on success, False on error."""
     temp_filepath = filepath + ".tmp"
     try:
@@ -232,7 +229,7 @@ def is_user_vip(user_id: int) -> bool:
             return False
     return False # Not in VIP data or data is not a dict
 
-def get_vip_expiry(user_id: int) -> Optional[str]:
+def get_vip_expiry(user_id: int) -> str | None:
     """Gets the VIP expiry date string (YYYY-MM-DD HH:MM:SS UTC) if the user is currently VIP."""
     vip_data = load_vip_data()
     user_id_str = str(user_id)
@@ -485,12 +482,11 @@ async def cancel(update: Update, context: CallbackContext) -> None:
 
 # --- File Processing Logic ---
 
-from typing import Tuple, Optional
-async def process_account(
-    session: aiohttp.ClientSession,
-    account: dict,
-    semaphore: asyncio.Semaphore
-) -> Tuple[Optional[str], Optional[str], Optional[dict], Optional[dict], Optional[str]]:
+async def process_account(session: aiohttp.ClientSession, account: dict, semaphore: asyncio.Semaphore) -> tuple[str | None, str | None, dict | None, dict | None, str | None]:
+    """
+    Processes a single account via the API to get a JWT token and potentially region.
+    (Remains mostly the same, but added slightly more robust logging)
+    Returns: tuple(token | None, region | None, working_account | None, lost_account | None, error_reason | None)
     """
     uid = account.get("uid")
     password = account.get("password")
@@ -586,7 +582,7 @@ async def process_account(
              return None, None, None, lost_info, error_reason
 
 async def handle_document(update: Update, context: CallbackContext) -> None:
-    # Handle incoming JSON documents OR files sent after /setfile.
+    """Handle incoming JSON documents OR files sent after /setfile."""
     user = update.effective_user
     message = update.message
     if not user or not message: return
@@ -1117,10 +1113,10 @@ async def handle_document(update: Update, context: CallbackContext) -> None:
 
 async def upload_to_github_background(bot, user_id: int, local_token_file_path: str, config: dict) -> bool:
     """
-    #'cUploads the content of the generated token file to GitHub.
-    #Designed to be called from background tasks. Sends notifications directly to the user.
-  #  Returns True on success, False on failure.
-        
+    Uploads the content of the generated token file to GitHub.
+    Designed to be called from background tasks. Sends notifications directly to the user.
+    Returns True on success, False on failure.
+    """
     notify_chat_id = user_id # Send notifications directly to the user
     upload_start_time = time.time()
     logger.info(f"Starting GitHub background upload for user {user_id}...")
@@ -2946,21 +2942,15 @@ async def run_scheduled_file_processor(application: Application) -> None:
         # Wait for the next check interval regardless of outcome (unless error caused sleep above)
         await asyncio.sleep(AUTO_PROCESS_CHECK_INTERVAL)
 
-async def process_single_schedule(
-    bot,
-    user_id: int,
-    schedule_name: str,
-    schedule_info: dict,
-    github_config: Optional[dict]
-) -> Tuple[str, str, bool]:
+async def process_single_schedule(bot, user_id: int, schedule_name: str, schedule_info: dict, github_config: dict | None) -> tuple[str, str, bool]:
     """
     Processes a single scheduled file: reads data, calls API, uploads to GitHub.
     Returns (user_id_str, schedule_name, github_upload_success_or_skipped)
     """
     user_id_str = str(user_id)
     stored_file_path = schedule_info.get('stored_file_path')
-    user_display_name = schedule_info.get('user_schedule_name', schedule_name)
-    github_upload_status = False
+    user_display_name = schedule_info.get('user_schedule_name', schedule_name) # For messages
+    github_upload_status = False # Default to false (meaning upload failed or was not needed)
 
     log_prefix = f"AutoProcess User {user_id} Schedule '{schedule_name}':"
     logger.info(f"{log_prefix} Starting.")
@@ -3407,6 +3397,21 @@ async def main() -> None:
          logger.info("Shutdown complete.")
 
 
+if __name__ == '__main__':
+    try:
+        # Ensure TOKEN has a valid value before running
+        if not TOKEN or TOKEN == "YOUR_FALLBACK_BOT_TOKEN":
+             print("FATAL: TELEGRAM_BOT_TOKEN is not set. Please configure it before running.")
+        else:
+             asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n-- Bot stopping due to Ctrl+C --")
+        logger.info("Bot stopped manually via KeyboardInterrupt.")
+    except Exception as e:
+        print(f"\n💥 A critical unhandled exception occurred outside the main asyncio loop: {e}")
+        logger.critical(f"Critical unhandled exception in __main__: {e}", exc_info=True)
+
+
 
 # ===================== FINAL MULTI-GITHUB + ADMIN EXTENSION =====================
 # This section ONLY ADDS features. Original logic remains untouched.
@@ -3526,18 +3531,3 @@ async def admin_panel(update: Update, context: CallbackContext):
     )
 
 # ===============================================================================
-
-if __name__ == '__main__':
-    try:
-        # Ensure TOKEN has a valid value before running
-        if not TOKEN or TOKEN == "YOUR_FALLBACK_BOT_TOKEN":
-             print("FATAL: TELEGRAM_BOT_TOKEN is not set. Please configure it before running.")
-        else:
-             asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\n-- Bot stopping due to Ctrl+C --")
-        logger.info("Bot stopped manually via KeyboardInterrupt.")
-    except Exception as e:
-        print(f"\n💥 A critical unhandled exception occurred outside the main asyncio loop: {e}")
-        logger.critical(f"Critical unhandled exception in __main__: {e}", exc_info=True)
-
